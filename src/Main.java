@@ -5,47 +5,46 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
-
 public class Main {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Input Pfad eingeben:");
-        String inputPfad = scanner.nextLine();
+        System.out.println("Input path:");
+        String inputPath = scanner.nextLine();
 
-        System.out.println("Output Pfad eingeben:");
-        String outputPfad = scanner.nextLine();
+        System.out.println("Output path:");
+        String outputPath = scanner.nextLine();
 
-        System.out.println("Gewünschte Tile-Größe eingeben (z.B. 16, 32, 64):");
+        System.out.println("Tile size (e.g., 16, 32, 64):");
         int tileSize = Integer.parseInt(scanner.nextLine());
 
-        System.out.println("Gewünschten Upscaling-Faktor eingeben (z.B. 1, 2, 4):");
-        int upscalingFaktor = Integer.parseInt(scanner.nextLine());
+        System.out.println("Upscaling factor  (e.g., 1, 2, 4):");
+        int upscalingFactor = Integer.parseInt(scanner.nextLine());
 
         try {
-            BufferedImage tileset = ImageIO.read(new File(inputPfad));
+            BufferedImage tileset = ImageIO.read(new File(inputPath));
 
-            int tileBreite = tileSize;
-            int tileHoehe = tileSize;
+            int tileWidth = tileSize;
+            int tileHeight = tileSize;
 
-            for (int y = 0; y < tileset.getHeight(); y += tileHoehe) {
-                for (int x = 0; x < tileset.getWidth(); x += tileBreite) {
-                    BufferedImage tile = tileset.getSubimage(x, y, tileBreite, tileHoehe);
+            for (int y = 0; y < tileset.getHeight(); y += tileHeight) {
+                for (int x = 0; x < tileset.getWidth(); x += tileWidth) {
+                    BufferedImage tile = tileset.getSubimage(x, y, tileWidth, tileHeight);
 
-                    // Hochskalieren auf die gewünschte Größe
-                    int scaledSize = tileSize * upscalingFaktor;
+                    // Upscaling to the desired size
+                    int scaledSize = tileSize * upscalingFactor;
                     BufferedImage scaledTile = new BufferedImage(scaledSize, scaledSize, BufferedImage.TYPE_INT_ARGB);
                     Graphics2D g2d = scaledTile.createGraphics();
                     g2d.drawImage(tile, 0, 0, scaledSize, scaledSize, null);
                     g2d.dispose();
 
-                    String dateiname = String.format("tile_%d_%d.png", x / tileBreite, y / tileHoehe);
-                    ImageIO.write(scaledTile, "png", new File(outputPfad, dateiname));
+                    String fileName = String.format("tile_%d_%d.png", x / tileWidth, y / tileHeight);
+                    ImageIO.write(scaledTile, "png", new File(outputPath, fileName));
                 }
             }
 
-            System.out.println("Tileset erfolgreich gesplittet und hochskaliert.");
+            System.out.println("Successfully split and exported under: " + outputPath);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -53,5 +52,4 @@ public class Main {
             scanner.close();
         }
     }
-
 }
